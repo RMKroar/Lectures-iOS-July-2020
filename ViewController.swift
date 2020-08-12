@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     
     var db: OpaquePointer?
     var posts = Array<Dictionary<String, String>>()
+    var selectedRow: Int = 0
     
     @IBOutlet weak var submitName: UITextField!
     @IBOutlet weak var submitPhone: UITextField!
@@ -159,6 +160,18 @@ class ViewController: UIViewController {
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let dest = segue.destination
+        guard let fc = dest as? FeedController else {
+            return
+        }
+        
+        let post : Dictionary<String, String> = posts[selectedRow]
+        fc.paramName = post["name"]
+        fc.paramPhone = post["phone"]
+        fc.paramLocation = post["location"]
+        fc.paramDesc = post["desc"]
+    }
 }
 
 extension ViewController :UITableViewDelegate, UITableViewDataSource {
@@ -173,5 +186,10 @@ extension ViewController :UITableViewDelegate, UITableViewDataSource {
         cell.textLabel?.text = singlePost["name"]! + " (" + singlePost["location"]! + ")"
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedRow = indexPath.row
+        self.performSegue(withIdentifier: "DataSegue", sender: self)
     }
 }
